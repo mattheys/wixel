@@ -16,7 +16,7 @@ int32 CODE param_baud_rate = 9600;
 int32 CODE param_Tranciever = 0;
 
 /** Global Variables **********************************************************/
-uint16 lastTransmit;
+uint32 lastTransmit;
 uint16 sendChar = 0;
 /** Functions *****************************************************************/
 
@@ -78,20 +78,20 @@ void usbToRadioService()
     {
         if (getMs() > lastTransmit + 1000)
         {
-            if(radioComTxAvailable())
+            lastTransmit = getMs();
+            sendChar ^= 1;
+        }
+        
+        if(radioComTxAvailable())
+        {
+            if (sendChar == 0)
             {
-                lastTransmit = getMs();
-                if (sendChar == 0)
-                {
-                    radioComTxSendByte(97);
-                }
-                else
-                {
-                    radioComTxSendByte(98);
-                }
-                sendChar ^= 1;
+                radioComTxSendByte(97);
             }
-            // Do a heartbeat every 1024ms for 21ms.
+            else
+            {
+                radioComTxSendByte(98);
+            }
         }
     }
     
@@ -135,7 +135,7 @@ void main()
     while(1)
     {
         boardService();
-        updateLeds();
+        //updateLeds();
 
         radioComTxService();
 
