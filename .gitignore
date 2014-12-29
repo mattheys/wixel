@@ -30,6 +30,7 @@
 *.wxl
 /examples/*
 /libraries/*
+/docs/*
 LICENSE.txt
-
 Makefile
+README.txt
