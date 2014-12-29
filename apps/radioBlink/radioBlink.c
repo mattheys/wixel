@@ -1,6 +1,6 @@
 /* wireless_serial app:
  * This app allows you to connect two Wixels together to make a wireless,
- * bidirectional, lossless serial link.  
+ * bidirectional, lossless serial link.
  * See description.txt or the Wixel User's Guide for more information.
  */
 
@@ -14,6 +14,7 @@
 /** Parameters ****************************************************************/
 int32 CODE param_baud_rate = 9600;
 int32 CODE param_Tranciever = 0;
+int32 CODE param_BlinkSpeedMs = 250;
 
 /** Global Variables **********************************************************/
 uint32 lastTransmit;
@@ -24,11 +25,11 @@ void updateLeds()
 {
     static BIT dimYellowLed = 0;
     static uint16 lastRadioActivityTime;
-    uint16 now;
+    uint32 now;
 
     usbShowStatusWithGreenLed();
 
-    now = (uint16)getMs();
+    now = getMs();
 
     if (!radioLinkConnected())
     {
@@ -76,7 +77,7 @@ void usbToRadioService()
 
     if(param_Tranciever == 1)
     {
-        if (getMs() > lastTransmit + 1000)
+        if (getMs() > lastTransmit + param_BlinkSpeedMs)
         {
             lastTransmit = getMs();
             sendChar ^= 1;
@@ -94,7 +95,7 @@ void usbToRadioService()
             }
         }
     }
-    
+
     if (param_Tranciever == 0)
     {
         while(radioComRxAvailable())
@@ -140,6 +141,6 @@ void main()
         radioComTxService();
 
         usbComService();
-        usbToRadioService();  
+        usbToRadioService();
     }
 }
